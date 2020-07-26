@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="canvas"></canvas>
+  <el-card>
+    <p v-for="(v, k) in attrs" class="item">
+      <span class="key">{{k}}</span>: <span class="value">{{v}}</span>
+    </p>
+  </el-card>
+</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  const canvas = document.getElementById('canvas');
+  const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl2') || canvas.getContext('experimental-webgl');
+  const userAgent = navigator.userAgent;
+  const webdriver = navigator.webdriver;
+  const languages = navigator.languages;
+  const appVersion = navigator.appVersion;
+  const mimeTypesLength = navigator.mimeTypes.length;
+  const pluginsLength = navigator.plugins.length;
+  const chromeInfo = window.chrome;
+  let permissionTestPassed = true;
+  let promise = (async () => {
+    const permissionStatus = await navigator.permissions.query({name: 'notifications'})
+    if (Notification.permission === 'denied' && permissionStatus.state === 'prompt') {
+      return false
+    } else {
+      return true
+    }
+  })();
+  const webGL2RenderingContextVendor = gl.getParameter(WebGL2RenderingContext.UNMASKED_VENDOR_WEBGL)
+  const webGL2RenderingContextRenderer = gl.getParameter(WebGL2RenderingContext.UNMASKED_RENDERER_WEBGL)
+  new Vue({
+    el: '#app',
+    data: function () {
+      return {
+        attrs: {
+          userAgent,
+          webdriver,
+          languages,
+          pluginsLength,
+          chromeInfo,
+          appVersion,
+          mimeTypesLength,
+          permissionTestPassed,
+          webGL2RenderingContextVendor,
+          webGL2RenderingContextRenderer
+        }
+      }
+    },
+    mounted() {
+      promise.then((value) => {
+        this.attrs.permissionTestPassed = value
+      })
+    }
+  })
+</script>
+</html>
